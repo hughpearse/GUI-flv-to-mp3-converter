@@ -2,8 +2,8 @@ Author:
 Hugh Pearse
 hughpearse@gmail.com
 
-===FLV to MP3 Converter===
-This is a graphical tool for converting folders full of .flv files.
+===Video to MP3 batch Converter===
+This is a graphical tool for converting folders full of video files.
 This is less sophisticated than than the full potential of ffmpeg converter.
 This tool is powered by the command line application ffmpeg.
 

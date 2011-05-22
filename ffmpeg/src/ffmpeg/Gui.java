@@ -71,8 +71,8 @@ public class Gui extends JFrame {
     public class MyHandler implements ActionListener{
 
         public void actionPerformed(ActionEvent e) {
-            
-            
+
+
             if (e.getSource() == b1){
                 //subRoot.add(panel2);
                 int returnVal = fc.showOpenDialog(panel2);
@@ -98,9 +98,11 @@ public class Gui extends JFrame {
                 subRoot.validate();
                 subRoot.repaint();
                 convert();
-            }            
+            }
         }
 
+        //[TODO]
+        //note - this is not actually filtering names...
         public void getFileNames(){
             folder = new File(folderName);
             listOfFiles = folder.listFiles();
@@ -119,15 +121,15 @@ public class Gui extends JFrame {
             int i=0;
             String newName="";
             try {
-
+                System.out.println("Currently in: " + where());
                 // run the Unix "ps -ef" command
                 // using the Runtime exec method:
                 Process p = Runtime.getRuntime().exec("date");
                 for(i=0; i < listOfFiles.length ; i++ ){
                     newName=listOfFiles[i].getName().replaceAll(".flv", ".mp3");
-                    Runtime.getRuntime().exec("wine " + folderName + "ffmpeg.exe -i  " + folderName + listOfFiles[i].getName() + " -f mp3  " + destName + newName);
+                    Runtime.getRuntime().exec("wine " + where() + "ffmpeg.exe -i  " + folderName + listOfFiles[i].getName() + " -f mp3  " + destName + newName);
                 }
-                
+
                 BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
@@ -150,6 +152,18 @@ public class Gui extends JFrame {
                 System.exit(-1);
             }
 
-        }
+        }//end method convert
+
+        public String where(){
+            File directory = new File (".");
+            String appDir="";
+            try {
+                appDir=directory.getCanonicalPath();
+                appDir+="/";
+            }catch(Exception e) {
+                System.out.println("Exception is ="+e.getMessage());
+            }
+            return appDir;
+        }//end method where
     }
 }
