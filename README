@@ -7,3 +7,9 @@ This is a graphical tool for converting folders full of video files.
 This is less sophisticated than than the full potential of ffmpeg converter.
 This tool is powered by the command line application ffmpeg.
 
+-Windows Build
+This version is compiled for windows
+
+-Linux Build
+This version is compiled to run ffmpeg.exe under WINE emulator.
+You must have WINE installed before running this application.
