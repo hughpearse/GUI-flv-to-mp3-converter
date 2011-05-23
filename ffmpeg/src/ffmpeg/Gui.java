@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.util.ArrayList;
 import javax.swing.*;
 
 /**
@@ -27,10 +28,6 @@ public class Gui extends JFrame {
     JButton b1 = new JButton("Select Source Folder");
     JButton b2 = new JButton("Select Destination Folder");
     JButton b3 = new JButton("Convert");
-    String folderName="";
-    String destName="";
-    File folder;
-    File[] listOfFiles;
 
     public Gui(){
         super("Stall Holder Inc");
@@ -69,6 +66,10 @@ public class Gui extends JFrame {
     }
 
     public class MyHandler implements ActionListener{
+        String folderName="";
+        String destName="";
+        File folder;
+        File[] listOfFiles;
 
         public void actionPerformed(ActionEvent e) {
 
@@ -80,7 +81,8 @@ public class Gui extends JFrame {
                     folderName=fc.getSelectedFile().getAbsolutePath();
                     folderName+="/";
                     System.out.println("Listing FLV files in: " + folderName);
-                    getFileNames();
+                    for(int i=0; i!=fileCount(); i++)
+                        System.out.println(getFileName(i));
                 }
             }
             if (e.getSource() == b2){
@@ -101,49 +103,51 @@ public class Gui extends JFrame {
             }
         }
 
-        //[TODO]
-        //note - this is not actually filtering names...
-        public void getFileNames(){
+        public String getFileName(int index){
+            String fileName = null;
+            ArrayList fileArray = new ArrayList();
             folder = new File(folderName);
             listOfFiles = folder.listFiles();
-            String video="";
+
             for (int i = 0; i < listOfFiles.length; i++) {
                 if (listOfFiles[i].isFile()) {
-                    video=listOfFiles[i].getName();
-                    if(video.endsWith(".flv"))
-                        System.out.println(folderName + listOfFiles[i].getName());
+                    if(listOfFiles[i].getName().endsWith(".flv"))
+                        fileArray.add(listOfFiles[i].getName());
                 }
             }
+            fileName=fileArray.get(index).toString();
+            return fileName;
+        }
+
+        public int fileCount(){
+            folder = new File(folderName);
+            listOfFiles = folder.listFiles();
+            int count=0;
+            for (int i = 0; i < listOfFiles.length; i++) {
+                if (listOfFiles[i].isFile()) {
+                    if(listOfFiles[i].getName().endsWith(".flv"))
+                        count++;
+                }
+            }
+            return count;
         }
 
         public void convert(){
             String s = null;
             int i=0;
             String newName="";
+
+            folder = new File(folderName);
+            listOfFiles = folder.listFiles();
+            
             try {
                 System.out.println("Currently in: " + where());
-                // run the Unix "ps -ef" command
-                // using the Runtime exec method:
-                Process p = Runtime.getRuntime().exec("date");
-                for(i=0; i < listOfFiles.length ; i++ ){
-                    newName=listOfFiles[i].getName().replaceAll(".flv", ".mp3");
-                    Runtime.getRuntime().exec("wine " + where() + "ffmpeg.exe -i  " + folderName + listOfFiles[i].getName() + " -f mp3  " + destName + newName);
+                System.out.println("Converting files in: " + folderName + " to folder " + destName);
+                for(i=0; i != fileCount(); i++ ){
+                    newName=getFileName(i).replaceAll(".flv", ".mp3");
+                    System.out.println("Processing: " + i + " " + getFileName(i) + " into " + newName);
+                    Runtime.getRuntime().exec("wine " + where() + "ffmpeg.exe -i  " + folderName + getFileName(i) + " -f mp3  " + destName + newName);
                 }
-
-                BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-                // read the output from the command
-                System.out.println("Here is the standard output of the command:\n");
-                while ((s = stdInput.readLine()) != null) {
-                    System.out.println(s);
-                }
-                // read any errors from the attempted command
-                System.out.println("Here is the standard error of the command (if any):\n");
-                while ((s = stdError.readLine()) != null) {
-                    System.out.println(s);
-                }
-
                 System.exit(0);
             }
             catch (IOException e) {
